@@ -1,0 +1,22 @@
+services:
+  go: &go
+    env_file: .env
+    tty: true
+    stdin_open: true
+    build:
+      context: .
+    entrypoint: go
+    command: help
+    volumes:
+      - .:/usr/src/app:delegated
+      - gomod:/usr/local/go/pkg/mod
+      - ${LOCAL_DEP_PATH:-..}:/local
+
+  app:
+    <<: *go
+    command: run ./server.go
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+
+volumes:
+  gomod: {}
