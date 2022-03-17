@@ -11,18 +11,17 @@ import (
 	"math/rand"
 )
 
-func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	todo := &model.Todo{
+func (r *mutationResolver) CreateTech(ctx context.Context, input model.NewTech) (*model.Technology, error) {
+	tech := &model.Technology{
 		Text: input.Text,
 		ID:   fmt.Sprintf("T%d", rand.Intn(100)),
-		User: &model.User{ID: input.UserID, Name: "user " + input.UserID},
 	}
-	r.todos = append(r.todos, todo)
-	return todo, nil
+	r.technologies = append(r.technologies, tech)
+	return tech, nil
 }
 
-func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	return r.todos, nil
+func (r *queryResolver) Technologies(ctx context.Context) ([]*model.Technology, error) {
+	return r.technologies, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.
