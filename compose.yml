@@ -18,5 +18,9 @@ services:
     ports:
       - ${SERVER_PORT}:${SERVER_PORT}
 
+  gen:
+    <<: *go
+    command: run github.com/99designs/gqlgen
+
 volumes:
   gomod: {}
