@@ -2,11 +2,6 @@
 
 package model
 
-type NewTech struct {
-	Text     string  `json:"text"`
-	PhotoURL *string `json:"photo_url"`
-}
-
 type Technology struct {
 	ID       string  `json:"id"`
 	Text     string  `json:"text"`

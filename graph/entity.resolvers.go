@@ -5,8 +5,8 @@ package graph
 
 import (
 	"context"
-	"dudo/go_hello_world/graph/generated"
-	"dudo/go_hello_world/graph/model"
+	"dudo/tech_service/graph/generated"
+	"dudo/tech_service/graph/model"
 	"fmt"
 )
 

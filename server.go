@@ -1,8 +1,8 @@
 package main
 
 import (
-	"dudo/go_hello_world/graph"
-	"dudo/go_hello_world/graph/generated"
+	"dudo/tech_service/graph"
+	"dudo/tech_service/graph/generated"
 	"fmt"
 	"net/http"
 	"os"

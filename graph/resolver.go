@@ -1,6 +1,6 @@
 package graph
 
-import "dudo/go_hello_world/graph/model"
+import "dudo/tech_service/graph/model"
 
 // This file will not be regenerated automatically.
 //

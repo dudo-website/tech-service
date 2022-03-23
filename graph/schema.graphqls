@@ -15,12 +15,3 @@ type Query {
   """
   technologies: [Technology!]!
 }
-
-input NewTech {
-  text: String!
-  photo_url: String
-}
-
-type Mutation {
-  createTech(input: NewTech!): Technology!
-}

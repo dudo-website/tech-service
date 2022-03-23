@@ -1,4 +1,4 @@
-module dudo/go_hello_world
+module dudo/tech_service
 
 go 1.17
 

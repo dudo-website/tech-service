@@ -5,7 +5,7 @@ package generated
 import (
 	"bytes"
 	"context"
-	"dudo/go_hello_world/graph/model"
+	"dudo/tech_service/graph/model"
 	"errors"
 	"fmt"
 	"strconv"
@@ -38,7 +38,6 @@ type Config struct {
 
 type ResolverRoot interface {
 	Entity() EntityResolver
-	Mutation() MutationResolver
 	Query() QueryResolver
 }
 
@@ -48,10 +47,6 @@ type DirectiveRoot struct {
 type ComplexityRoot struct {
 	Entity struct {
 		FindTechnologyByID func(childComplexity int, id string) int
-	}
-
-	Mutation struct {
-		CreateTech func(childComplexity int, input model.NewTech) int
 	}
 
 	Query struct {
@@ -73,9 +68,6 @@ type ComplexityRoot struct {
 
 type EntityResolver interface {
 	FindTechnologyByID(ctx context.Context, id string) (*model.Technology, error)
-}
-type MutationResolver interface {
-	CreateTech(ctx context.Context, input model.NewTech) (*model.Technology, error)
 }
 type QueryResolver interface {
 	Technologies(ctx context.Context) ([]*model.Technology, error)
@@ -107,18 +99,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Entity.FindTechnologyByID(childComplexity, args["id"].(string)), true
-
-	case "Mutation.createTech":
-		if e.complexity.Mutation.CreateTech == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_createTech_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.CreateTech(childComplexity, args["input"].(model.NewTech)), true
 
 	case "Query.technologies":
 		if e.complexity.Query.Technologies == nil {
@@ -198,20 +178,6 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 				Data: buf.Bytes(),
 			}
 		}
-	case ast.Mutation:
-		return func(ctx context.Context) *graphql.Response {
-			if !first {
-				return nil
-			}
-			first = false
-			data := ec._Mutation(ctx, rc.Operation.SelectionSet)
-			var buf bytes.Buffer
-			data.MarshalGQL(&buf)
-
-			return &graphql.Response{
-				Data: buf.Bytes(),
-			}
-		}
 
 	default:
 		return graphql.OneShot(graphql.ErrorResponse(ctx, "unsupported GraphQL operation"))
@@ -254,15 +220,6 @@ type Query {
   Fetch a paginated list of tech.
   """
   technologies: [Technology!]!
-}
-
-input NewTech {
-  text: String!
-  photo_url: String
-}
-
-type Mutation {
-  createTech(input: NewTech!): Technology!
 }
 `, BuiltIn: false},
 	{Name: "federation/directives.graphql", Input: `
@@ -313,21 +270,6 @@ func (ec *executionContext) field_Entity_findTechnologyByID_args(ctx context.Con
 		}
 	}
 	args["id"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Mutation_createTech_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 model.NewTech
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewTech2dudoᚋgo_hello_worldᚋgraphᚋmodelᚐNewTech(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
 	return args, nil
 }
 
@@ -438,49 +380,7 @@ func (ec *executionContext) _Entity_findTechnologyByID(ctx context.Context, fiel
 	}
 	res := resTmp.(*model.Technology)
 	fc.Result = res
-	return ec.marshalNTechnology2ᚖdudoᚋgo_hello_worldᚋgraphᚋmodelᚐTechnology(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Mutation_createTech(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_createTech_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateTech(rctx, args["input"].(model.NewTech))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*model.Technology)
-	fc.Result = res
-	return ec.marshalNTechnology2ᚖdudoᚋgo_hello_worldᚋgraphᚋmodelᚐTechnology(ctx, field.Selections, res)
+	return ec.marshalNTechnology2ᚖdudoᚋtech_serviceᚋgraphᚋmodelᚐTechnology(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_technologies(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -515,7 +415,7 @@ func (ec *executionContext) _Query_technologies(ctx context.Context, field graph
 	}
 	res := resTmp.([]*model.Technology)
 	fc.Result = res
-	return ec.marshalNTechnology2ᚕᚖdudoᚋgo_hello_worldᚋgraphᚋmodelᚐTechnologyᚄ(ctx, field.Selections, res)
+	return ec.marshalNTechnology2ᚕᚖdudoᚋtech_serviceᚋgraphᚋmodelᚐTechnologyᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query__entities(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1986,37 +1886,6 @@ func (ec *executionContext) ___Type_specifiedByURL(ctx context.Context, field gr
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputNewTech(ctx context.Context, obj interface{}) (model.NewTech, error) {
-	var it model.NewTech
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
-		asMap[k] = v
-	}
-
-	for k, v := range asMap {
-		switch k {
-		case "text":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("text"))
-			it.Text, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "photo_url":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("photo_url"))
-			it.PhotoURL, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -2083,46 +1952,6 @@ func (ec *executionContext) _Entity(ctx context.Context, sel ast.SelectionSet) g
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var mutationImplementors = []string{"Mutation"}
-
-func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, mutationImplementors)
-	ctx = graphql.WithFieldContext(ctx, &graphql.FieldContext{
-		Object: "Mutation",
-	})
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		innerCtx := graphql.WithRootFieldContext(ctx, &graphql.RootFieldContext{
-			Object: field.Name,
-			Field:  field,
-		})
-
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Mutation")
-		case "createTech":
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_createTech(ctx, field)
-			}
-
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, innerFunc)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2776,11 +2605,6 @@ func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.Selec
 	return res
 }
 
-func (ec *executionContext) unmarshalNNewTech2dudoᚋgo_hello_worldᚋgraphᚋmodelᚐNewTech(ctx context.Context, v interface{}) (model.NewTech, error) {
-	res, err := ec.unmarshalInputNewTech(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
 	res, err := graphql.UnmarshalString(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -2796,11 +2620,11 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) marshalNTechnology2dudoᚋgo_hello_worldᚋgraphᚋmodelᚐTechnology(ctx context.Context, sel ast.SelectionSet, v model.Technology) graphql.Marshaler {
+func (ec *executionContext) marshalNTechnology2dudoᚋtech_serviceᚋgraphᚋmodelᚐTechnology(ctx context.Context, sel ast.SelectionSet, v model.Technology) graphql.Marshaler {
 	return ec._Technology(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNTechnology2ᚕᚖdudoᚋgo_hello_worldᚋgraphᚋmodelᚐTechnologyᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Technology) graphql.Marshaler {
+func (ec *executionContext) marshalNTechnology2ᚕᚖdudoᚋtech_serviceᚋgraphᚋmodelᚐTechnologyᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Technology) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -2824,7 +2648,7 @@ func (ec *executionContext) marshalNTechnology2ᚕᚖdudoᚋgo_hello_worldᚋgra
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNTechnology2ᚖdudoᚋgo_hello_worldᚋgraphᚋmodelᚐTechnology(ctx, sel, v[i])
+			ret[i] = ec.marshalNTechnology2ᚖdudoᚋtech_serviceᚋgraphᚋmodelᚐTechnology(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -2844,7 +2668,7 @@ func (ec *executionContext) marshalNTechnology2ᚕᚖdudoᚋgo_hello_worldᚋgra
 	return ret
 }
 
-func (ec *executionContext) marshalNTechnology2ᚖdudoᚋgo_hello_worldᚋgraphᚋmodelᚐTechnology(ctx context.Context, sel ast.SelectionSet, v *model.Technology) graphql.Marshaler {
+func (ec *executionContext) marshalNTechnology2ᚖdudoᚋtech_serviceᚋgraphᚋmodelᚐTechnology(ctx context.Context, sel ast.SelectionSet, v *model.Technology) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
