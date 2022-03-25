@@ -215,6 +215,9 @@ type Technology @key(fields: "id") {
   photo_url: String
 }
 
+"""
+CQRS application architecture. Query a Datastore!
+"""
 type Query {
   """
   Fetch a paginated list of tech.

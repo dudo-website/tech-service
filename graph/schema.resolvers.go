@@ -8,10 +8,16 @@ import (
 	"dudo/tech_service/graph/generated"
 	"dudo/tech_service/graph/model"
 	"fmt"
+	"math/rand"
 )
 
 func (r *queryResolver) Technologies(ctx context.Context) ([]*model.Technology, error) {
-	panic(fmt.Errorf("not implemented"))
+	tech := &model.Technology{
+		ID:   fmt.Sprintf("T%d", rand.Intn(100)),
+		Text: "Testing goodness",
+	}
+	r.technologies = append(r.technologies, tech)
+	return []*model.Technology{tech}, nil
 }
 
 // Query returns generated.QueryResolver implementation.
