@@ -15,7 +15,7 @@ import (
 // https://gqlgen.com/recipes/cors/
 func main() {
 	router := chi.NewRouter()
-	server_port := os.Getenv("SERVER_PORT")
+	server_port := os.Getenv("PORT")
 
 	router.Use(cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
