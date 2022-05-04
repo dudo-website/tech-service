@@ -9,7 +9,7 @@ services:
     command: help
     volumes:
       - .:/usr/src/app:delegated
-      - gomod:/usr/local/go/pkg/mod
+      - gomod:/go/pkg/mod
       - ${LOCAL_DEP_PATH:-..}:/local
 
   app:

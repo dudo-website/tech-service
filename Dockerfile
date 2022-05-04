@@ -1,4 +1,4 @@
-FROM golang:1.18-rc
+FROM golang:1.18
 
 WORKDIR /usr/src/app
 
