@@ -4,6 +4,7 @@ import (
 	"dudo/tech_service/graph"
 	"dudo/tech_service/graph/generated"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -26,8 +27,6 @@ func main() {
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
 	router.Handle("/query", srv)
 
-	err := http.ListenAndServe(fmt.Sprintf(":%s", server_port), router)
-	if err != nil {
-		panic(err)
-	}
+	log.Println("listening on port", server_port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", server_port), router))
 }
