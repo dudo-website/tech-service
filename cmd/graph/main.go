@@ -16,17 +16,32 @@ import (
 // https://gqlgen.com/recipes/cors/
 func main() {
 	router := chi.NewRouter()
-	server_port := os.Getenv("PORT")
 
-	router.Use(cors.New(cors.Options{
+	serverPort := os.Getenv("PORT")
+	if serverPort == "" {
+		log.Fatal("PORT environment variable not set")
+	}
+
+	router.Use(corsConfig().Handler)
+
+	router.Handle("/query", newGraphQLServer())
+
+	log.Println("listening on port", serverPort)
+	log.Fatal(http.ListenAndServe(":" + serverPort, router))
+}
+
+func corsConfig() *cors.Cors {
+	return cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowCredentials: true,
 		Debug:            true,
-	}).Handler)
+	})
+}
 
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
-	router.Handle("/query", srv)
-
-	log.Println("listening on port", server_port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", server_port), router))
+func newGraphQLServer() *handler.Server {
+	return handler.NewDefaultServer(
+		generated.NewExecutableSchema(
+			generated.Config{Resolvers: &graph.Resolver{}},
+		),
+	)
 }
